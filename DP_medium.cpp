@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 class Solution
@@ -125,14 +127,41 @@ public:
       return top / bottom;
     }
   }
+
+  // 368. Largest Divisible Subset -- DP
+  vector<int> largestDivisibleSubset(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    int length = nums.size(), res = 1, resIndex = 0;
+    vector<int> dp(length, 1), mother(length), ans;
+    if (length == 0) return ans;
+    for (int i = 0; i < length; i++) mother[i] = i;
+    for (int i = 1; i < length; i++) {
+      for (int j = 0; j < i; j++) {
+        if (nums[i] % nums[j] == 0 && dp[i] < dp[j] + 1) {
+          dp[i] = dp[j] + 1;
+          mother[i] = j;
+          if (dp[i] > res) {
+            res = dp[i];
+            resIndex = i;
+          }
+        }
+      }
+    }
+    for (int i = 0; i < res; i++) {
+      ans.push_back(nums[resIndex]);
+      resIndex = mother[resIndex];
+    }
+    return ans;
+  }
 };
 
 int main()
 {
   Solution solution;
-  clock_t start = clock();
-  cout << solution.new21Game(21, 17, 10) << endl;
-  clock_t finish = clock();
-  cout << ((double)(finish - start) / CLOCKS_PER_SEC * 1000) << "ms" << endl;
+  vector<int> nums = {1};
+  nums = solution.largestDivisibleSubset(nums);
+  for (int i = 0; i < nums.size(); i++) {
+    cout << nums[i] << endl;
+  }
   return 0;
 }
