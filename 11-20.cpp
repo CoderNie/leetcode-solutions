@@ -1,9 +1,11 @@
-#include <iostream>
-#include <queue>
-#include <algorithm>
-#include <sstream>
 #include <map>
+#include <queue>
+#include <stack>
 #include <set>
+
+#include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <cmath>
 #include <ctime>
 #include <climits>
@@ -102,9 +104,22 @@ public:
     }
     return res;
   }
+  // 14. Longest Common Prefix
+  string longestCommonPrefix(vector<string>& strs) {
+    if (strs.size() == 0) return "";
+    int length = 0;
+    while (true) {
+      if (strs[0].size() < length + 1) break;
+      for (int i = 0; i < strs.size() - 1; i++)
+        if (strs[i + 1].size() < length + 1 || strs[i][length] != strs[i + 1][length])
+          return strs[0].substr(0, length);
+      length++;
+    }
+    return strs[0].substr(0, length);
+  }
   // 15. 3Sum
-  vector<vector<int>> threeSum(vector<int>& nums) {
-    vector<vector<int>> res;
+  vector<vector<int> > threeSum(vector<int>& nums) {
+    vector<vector<int> > res;
     set<string> mySet;
     if (nums.size() < 3) return res;
     sort(nums.begin(), nums.end());
@@ -181,6 +196,7 @@ public:
     }
     return res;
   }
+  
 
   // 17. Letter Combinations of a Phone Number
   vector<string> letterCombinations(string digits) {
@@ -248,14 +264,31 @@ public:
     q->next = q->next->next;
     return dummy->next;
   }
-
+  // 20. Valid Parentheses
+  bool isValid(string s) {
+    stack<char> brackets;
+    map<char, char> bracketMap;
+    bracketMap[')'] = '(';
+    bracketMap[']'] = '[';
+    bracketMap['}'] = '{';
+    for (int i = 0; i < s.size(); i++) {
+      if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
+        brackets.push(s[i]);
+      } else if (s[i] == ')' || s[i] == ']' || s[i] == '}') {
+        if (!brackets.empty() && brackets.top() == bracketMap[s[i]]) {
+          brackets.pop();
+        } else {
+          return false;
+        }
+      }
+    }
+    if (brackets.empty()) return true;
+    else return false;
+  }
 };
 
 int main () {
   Solution s;
-  vector<string> res = s.letterCombinations("23");
-  cout << res.size() << endl;
-  for (string str: res) {
-    cout << str << endl;
-  }
+  // vector<string> res = {"flow","flow","flow"};
+  cout << boolalpha << s.isValid("([]){}") << endl;
 }
