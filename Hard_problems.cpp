@@ -362,11 +362,35 @@ public:
           dp[i][j] = min(min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
     return dp[n][m];
   }
+  // 97. Interleaving String
+    /*
+    i + j = k
+    dp[i][j][k] = (dp[i - 1][j][k - 1] && s1[i - 1] == s3[k - 1]) || (dp[i][j - 1][k - 1] && s2[j - 1] == s3[k - 1])
+    dp[i][0][i] = dp[i - 1][0][i - 1] && s1[i - 1] == s3[i - 1]
+    dp[0][j][j] = dp[0][j - 1][j - 1] && s2[j - 1] == s3[j - 1]
+  */
+  bool isInterleave(string s1, string s2, string s3) {
+    int length1 = s1.size(), length2 = s2.size(), length3 = s3.size();
+    if (length1 + length2 != length3) return false;
+    bool dp[length1 + 1][length2 + 1];
+    for (int i = 0; i < length1; i++)
+      for (int j = 0; j < length2; j++)
+        dp[i][j] = false;
+    dp[0][0] = true;
+    for (int i = 1; i <= length1; i++)
+      dp[i][0] = (dp[i - 1][0] && s1[i - 1] == s3[i - 1]);
+    for (int j = 1; j <= length2; j++)
+      dp[0][j] = (dp[0][j - 1] && s2[j - 1] == s3[j - 1]);
+    for (int i = 1; i <= length1; i++)
+      for (int j = 1; j <= length2; j++)
+        dp[i][j] = ((dp[i - 1][j] && s1[i - 1] == s3[i + j - 1]) || (dp[i][j - 1] && s2[j - 1] == s3[i + j - 1]));
+    return dp[length1][length2];
+  }
 };
 
 int main () {
   Solution s;
-  cout << s.minDistance("execution", "") << endl;
+  cout << boolalpha << s.isInterleave("", "a", "c") << endl;
 
 
   // Sudoku-------------
