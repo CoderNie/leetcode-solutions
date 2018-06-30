@@ -3,6 +3,7 @@
 #include <set>
 #include <unordered_map>
 #include <vector>
+#include <stack>
 
 #include <algorithm>
 #include <sstream>
@@ -134,11 +135,88 @@ public:
     reverse(result.begin(), result.end());
     return result;
   }
+  // 48. Rotate Image
+  /*
+    i,j    j,n-1-i    n-1-i, n-1-j  n-1-j,i
+  */
+  void rotate(vector<vector<int> >& matrix) {
+    int n = matrix.size(), temp;
+    for (int i = 0; i < n / 2; i++) {
+      for (int j = 0; j < (n + 1) / 2; j++) {
+        cout << matrix[i][j] << "\t" << matrix[j][n-1-i] << "\t" << matrix[n-1-i][n-1-j] << "\t" << matrix[n-1-j][i] << endl;
+        temp = matrix[i][j];
+        matrix[i][j] = matrix[n-1-j][i];
+        matrix[n-1-j][i] = matrix[n-1-i][n-1-j];
+        matrix[n-1-i][n-1-j] = matrix[j][n-1-i];
+        matrix[j][n-1-i] = temp;
+      }
+    }        
+  }
+  // 49. Group Anagrams
+  vector<vector<string> > groupAnagrams(vector<string>& strs) {
+    vector<map<char, int> > maps;
+    vector<vector<string> > result;
+    map<char, int>::iterator iter;
+    for (string str : strs) {
+      map<char, int> newMap;
+      for (char c : str) {
+        if (newMap.find(c) == newMap.end()) {
+          newMap[c] = 1;
+        } else {
+          newMap[c]++;
+        }
+      }
+      int targetIndex = -1;
+      for (int i = 0; i < maps.size(); i++) {
+        bool isEqual = true;
+        if (newMap.size() != maps[i].size()) continue;
+        for(iter = maps[i].begin(); iter != maps[i].end(); iter++) {
+          if (newMap.find(iter->first) == newMap.end() || newMap[iter->first] != iter->second) {
+            isEqual = false;
+            break;
+          }
+        }
+        if (isEqual) {
+          targetIndex = i;
+          break;
+        }
+      }
+      if (targetIndex != -1) {
+        result[targetIndex].push_back(str);
+      } else {
+        result.push_back({str});
+        maps.push_back(newMap);
+      }
+    }
+    return result;
+  }
+  // 50. Pow(x, n)
+  double myPow(double x, int n) {
+    bool isNeg = false;
+    long ln = n;
+    if (ln < 0) {
+      isNeg = true;
+      ln *= -1;
+    }
+    stack<bool> mark;
+    while (ln > 0) {
+      mark.push(ln % 2 == 1);
+      ln /= 2;
+    }
+    double result = 1;
+    while (!mark.empty())  {
+      if(mark.top()) result *= x;
+      mark.pop();
+      if (!mark.empty()) result *= result;
+    }
+    return isNeg ? 1/result : result;
+  }
 };
 
 int main() {
   Solution s;
-  vector<int> nums = {};
-  cout << s.permuteUnique(nums).size() << endl;
+  cout << pow(2, INT32_MIN) << endl;
+  cout << s.myPow(2, INT32_MIN) << endl;
+  // s.myPow(0.2, 13);
   return 0;
 }
