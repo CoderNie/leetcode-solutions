@@ -62,3 +62,35 @@ FROM
   Scores, 
   (SELECT @i := 0,@pre := -1) INIT
 ORDER BY Score DESC
+
+/* 181. Employees Earning More Than Their Managers */
+SELECT
+  Name
+FROM
+  (
+    SELECT
+      ManagerId,
+      Salary
+    FROM
+      Employee
+    WHERE ManagerId IS NOT NULL
+  ) Worker
+LEFT JOIN Employee ON
+  Employee.id = Worker.ManagerId
+  AND
+  Employee.Salary < Worker.Salary
+
+/* 182. Duplicate Emails */
+SELECT
+	Email
+FROM
+(
+  SELECT
+    count(Email) AS Total,
+    Email
+  FROM
+    Person
+  GROUP BY Email
+) TotalTable
+WHERE
+	Total > 1
