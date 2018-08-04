@@ -74,4 +74,57 @@ public:
       reverse(results[i].begin(), results[i].end());
     return results;
   }
+
+  // 105. Construct Binary Tree from Preorder and Inorder Traversal
+  TreeNode* buildTree_old(vector<int>& preorder, vector<int>& inorder) {
+    if (preorder.size() <= 0) return NULL;
+    map<int, int> posMap;
+    for (int i = 0; i < inorder.size(); i++)
+      posMap[inorder[i]] = i;
+    TreeNode *root = new TreeNode(preorder[0]), *p, *before;
+    for (int i = 1; i < preorder.size(); i++) {
+      TreeNode *newNode = new TreeNode(preorder[i]);
+      p = root;
+      while (true) {
+        if (posMap[newNode->val] > posMap[p->val]) {
+          if (p->right == NULL) {
+            p->right = newNode;
+            break;
+          } else {
+            p = p->right;
+          }
+        } else {
+          if (p->left == NULL) {
+            p->left = newNode;
+            break;
+          } else {
+            p = p->left;
+          }
+        }
+      }
+    }
+    return root;
+  }
+
+  // 105. Construct Binary Tree from Preorder and Inorder Traversal
+  TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+    return buildTreeOnce(preorder, 0, preorder.size(), inorder, 0, inorder.size());
+  }
+  int indexOf(int target, vector<int>& arr, int arrStart) {
+    for (int i = arrStart; i < arr.size(); i++)
+      if (target == arr[i]) return i;
+    return -1;
+  }
+  TreeNode* buildTreeOnce(vector<int>& preorder, int pStart, int pEnd, vector<int>& inorder, int iStart, int iEnd) {
+    if (pEnd - pStart <= 0) {
+      return NULL;
+    } else {
+      int nowIndex = indexOf(preorder[pStart], inorder, iStart);
+      int leftLength = nowIndex - iStart;
+      TreeNode *nowNode = new TreeNode(preorder[pStart]);
+      nowNode->left = buildTreeOnce(preorder, pStart + 1, pStart + leftLength + 1, inorder, iStart, nowIndex);
+      nowNode->right = buildTreeOnce(preorder, pStart + leftLength + 1, pEnd, inorder, nowIndex + 1, iEnd);
+      return nowNode;
+    }
+  }
 };

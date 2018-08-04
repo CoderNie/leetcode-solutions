@@ -26,7 +26,7 @@ public:
     ListNode* head = new ListNode(0);
     ListNode* p = head;
     while (l1 != NULL && l2 != NULL) {
-      if (l1->val < l2 -> val) {
+      if (l1->val < l2 ->val) {
         p->next = l1;
         l1 = l1->next;
       } else {
@@ -47,8 +47,8 @@ public:
   vector<string> generateParenthesis(int n) {
     if (n == 0) return {};
     // nowString, leftCount, rightCount
-    vector<pair<string, pair<int, int>>> res = {{"", {0, 0}}};
-    vector<pair<string, pair<int, int>>> linshi;
+    vector<pair<string, pair<int, int> > > res = {{"", {0, 0}}};
+    vector<pair<string, pair<int, int> > > linshi;
     for (int i = 0; i < 2 * n; i++) {
       for (int j = 0; j < res.size(); j++) {
         string oldString = res[j].first;

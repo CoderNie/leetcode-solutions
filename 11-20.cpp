@@ -120,24 +120,20 @@ public:
   // 15. 3Sum
   vector<vector<int> > threeSum(vector<int>& nums) {
     vector<vector<int> > res;
-    set<string> mySet;
     if (nums.size() < 3) return res;
     sort(nums.begin(), nums.end());
     int p, q, sum;
     for (int i = 0; i < nums.size() - 2; i++) {
+      if (nums[i] > 0) 
+        break;
+      else if (i > 0 && nums[i] == nums[i - 1]) 
+        continue;
       p = i + 1;
       q = nums.size() - 1;
       while (p < q) {
         sum = nums[i] + nums[p] + nums[q];
         if (sum == 0) {
-          ostringstream fir, sec;
-          fir << nums[i];
-          sec << nums[p];
-          string key = fir.str() + sec.str();
-          if (mySet.find(key) == mySet.end()) {
-            mySet.insert(key);
-            res.push_back({nums[i], nums[p], nums[q]});
-          }
+          res.push_back({nums[i], nums[p], nums[q]});
           while (nums[p] == nums[p + 1] && p < q)
             p++;
           p++;
@@ -154,8 +150,6 @@ public:
           p++;
         }
       }
-      while (nums[i] == nums[i + 1])
-        i++;
     }
     return res;
   }
@@ -167,6 +161,7 @@ public:
     int gap = INT_MAX;
     int res;
     for (int i = 0; i < nums.size() - 2; i++) {
+      if (i > 0 && nums[i] == nums[i - 1]) continue;
       p = i + 1;
       q = nums.size() - 1;
       while (p < q) {
@@ -191,8 +186,6 @@ public:
           p++;
         }
       }
-      while (nums[i] == nums[i + 1])
-        i++;
     }
     return res;
   }
@@ -227,7 +220,42 @@ public:
 
   // 18. 4Sum 
   vector<vector<int>> fourSum(vector<int>& nums, int target) {
-    return {{}};
+        vector<vector<int> > res;
+    if (nums.size() < 4) return res;
+    sort(nums.begin(), nums.end());
+    int p, q, sum;
+    for (int j = 0; j < nums.size() - 3; j++) {
+      if (j > 0 && nums[j] == nums[j - 1])
+        continue;
+      int target3 = target - nums[j];  
+      for (int i = j + 1; i < nums.size() - 2; i++) {
+        if (i > j + 1 && nums[i] == nums[i - 1]) 
+          continue;
+        p = i + 1;
+        q = nums.size() - 1;
+        while (p < q) {
+          sum = nums[i] + nums[p] + nums[q];
+          if (sum == target3) {
+            res.push_back({nums[j], nums[i], nums[p], nums[q]});
+            while (nums[p] == nums[p + 1] && p < q)
+              p++;
+            p++;
+            while (nums[q] == nums[q - 1] && p < q)
+              q--;
+            q--;
+          } else if (sum > target3) {
+            while (nums[q] == nums[q - 1] && p < q)
+              q--;
+            q--;
+          } else {
+            while (nums[p] == nums[p + 1] && p < q)
+              p++;
+            p++;
+          }
+        }
+      }
+    }
+    return res;
   }
 
   // 19. Remove Nth Node From End of List
@@ -289,6 +317,8 @@ public:
 
 int main () {
   Solution s;
-  // vector<string> res = {"flow","flow","flow"};
-  cout << boolalpha << s.isValid("([]){}") << endl;
+  vector<int> res = {0, 0, 0};
+  vector<vector<int> > output = s.threeSum(res);
+  cout << output.size() << endl;
+
 }
