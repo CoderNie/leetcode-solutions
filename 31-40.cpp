@@ -168,6 +168,11 @@ public:
     if (nums[start] == target) resRight = start;
     return {resLeft, resRight};
   }
+    // 35. Search Insert Position
+    int searchInsert(vector<int>& nums, int target) {
+        return 0;
+    }
+
   // 36. Valid Soduku
   bool isValidSudoku(vector<vector<char>>& board) {
     int a, temp;
@@ -214,11 +219,45 @@ public:
     }
     return true;        
   }
+
+  // 38. 
+    string countAndSay(int n) {
+        string s = "1";
+        for (int i = 1; i < n; i++) {
+            string temp = s.substr(0, 1);
+            string newStr = "";
+            for (int j = 1; j < s.size(); j++) {
+                if (s[j] == temp[0]) {
+                    temp = temp + s[j];
+                } else {
+                    newStr = newStr + to_string(temp.size()) + temp[0];
+                    temp = s[j];
+                }
+            }
+            newStr = newStr + to_string(temp.size()) + temp[0];
+            s = newStr;
+        }
+        return s;
+    }
+    void printArr(vector<int> &arr) {
+        if (arr.size() > 1)
+            cout << arr[0];
+        for (int i = 1; i < arr.size(); i++)
+            cout << ", " << arr[i];
+        cout << endl;
+    }
 };
 
 int main() {
-  vector<int> nums = {5,7,7,8,8,10};
+//   vector<int> nums = {5,7,7,8,8,10};
   Solution s;
-  cout << '0' - 48 << endl;
+//   cout << s.countAndSay(4) << endl;
+    vector<int> a = {1, 2, 3};
+    s.printArr(a);
+    
+    a.erase(a.begin());
+    s.printArr(a);
+
+//   cout << '0' - 48 << endl;
   return 0;
 }

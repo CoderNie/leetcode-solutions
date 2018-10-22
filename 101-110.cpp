@@ -67,12 +67,20 @@ public:
     return results;
   }
 
-  // 104. Binary Tree Zigzag Level Order Traversal
+  // 103. Binary Tree Zigzag Level Order Traversal
   vector<vector<int> > zigzagLevelOrder(TreeNode* root) {
     vector<vector<int> > results = levelOrder(root);
     for (int i = 1; i < results.size(); i += 2)
       reverse(results[i].begin(), results[i].end());
     return results;
+  }
+
+  // 104. Maximum Depth of Binary Tree
+  int maxDepth(TreeNode* root) {
+    if (root == NULL)
+      return 0;
+    else
+      return 1 + max(maxDepth(root->left), maxDepth(root->right));
   }
 
   // 105. Construct Binary Tree from Preorder and Inorder Traversal

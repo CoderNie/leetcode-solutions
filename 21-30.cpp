@@ -106,10 +106,9 @@ public:
       nowPoint = pQueue.top().second;
       p->next = nowPoint;
       p = p->next;
-      nowPoint = nowPoint->next;
       pQueue.pop();
-      if (nowPoint != NULL) {
-        pQueue.push({nowPoint->val, nowPoint});
+      if (nowPoint->next != NULL) {
+        pQueue.push({nowPoint->next->val, nowPoint->next});
       }
     }
     return dump->next;
@@ -132,32 +131,78 @@ public:
 
   // 25. Reverse Nodes in k-Group
   ListNode* reverseKGroup(ListNode* head, int k) {
+    if (k == 1) return head;
     vector<ListNode*> nodeList;
-    ListNode *dump = new ListNode(0), *p = head, *before = dump, *after;
+    ListNode *dump = new ListNode(0), *p = dump, *former, *latter, *nextLatter, *q;
     dump->next = head;
     while (true) {
-      for (int i = 0; i < k; i++) {
-        if (p != NULL) {
-          nodeList.push_back(p);
-          p = p->next;
+      // check count of left nodes
+      q = p;
+      for (int i = 0; i < k + 1; i++) {
+        if (q != NULL) {
+          q = q->next;
+        } else {
+          return dump->next;      
         }
       }
-      if (nodeList.size() == k) {
-        after = nodeList[k - 1]->next;
-        for (int j = k - 1; j >= 1; j--) {
-          nodeList[j]->next = nodeList[j - 1];
-        }
-        before->next = nodeList[k - 1];
-        nodeList[0]->next = after;
-        before = nodeList[k - 1];
-        nodeList.clear();
-      } else {
-        break;
+      // deal with medial relations 
+      former = p->next;
+      latter = former->next;
+      for (int i = 0; i < k - 1; i++) {
+        // save latter->next as next latter
+        nextLatter = latter->next;
+        // latter->next = former
+        latter->next = former;
+        // save latter as next former  
+        former = latter;
+        latter = nextLatter;
       }
+      // deal with head
+      q = p->next;
+      p->next = former;
+      // deal with tail
+      q->next = latter;
+
+      p = q;
     }
     return dump->next;      
   }
-
+  // 26. Remove Duplicates from Sorted Array
+  int removeDuplicates(vector<int>& nums) {
+    if (nums.size() == 0) return 0;
+    int j = 1;
+    for (int i = 1; i < nums.size(); i++) {
+      if (nums[i] != nums[i - 1]) {
+        nums[j++] = nums[i];
+      }
+    } 
+    return j;      
+  }
+  // 27. Remove Element
+  int removeElement(vector<int>& nums, int val) {
+    int j = 0;
+    for (int i = 0; i < nums.size(); i++) {
+      if (nums[i] != val) {
+        nums[j++] = nums[i];
+      }
+    }
+    return j;
+  }
+  // 28. Implement strStr()
+  int strStr(string haystack, string needle) {
+    if (needle.size() == 0) return 0;
+    int hLen = haystack.size(), nLen = needle.size();
+    for (int i = 0; i < hLen; i++) {
+      if (hLen - i < nLen) {
+        return -1;
+      } else {
+        if (haystack.substr(i, nLen).compare(needle) == 0) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
   // 29. Divide Two Integers
   int divide_subtract(int dividend, int divisor) {
     if (dividend > INT32_MAX || dividend < INT32_MIN || divisor > INT32_MAX || divisor < INT32_MIN) return INT32_MAX;

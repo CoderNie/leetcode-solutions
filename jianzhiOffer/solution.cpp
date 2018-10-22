@@ -25,6 +25,14 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
+struct RandomListNode {
+  int label;
+  struct RandomListNode *next, *random;
+  RandomListNode(int x) :
+    label(x), next(NULL), random(NULL) {
+  }
+};
+
 class Solution {
 private:
   stack<int> stack1;
@@ -215,9 +223,18 @@ public:
     }
     return res;
   }
-  // 13.
+  // 13.调整数组顺序使奇数位于偶数前面
   void reOrderArray(vector<int> &array) {
-        
+    if (array.size() <= 1) return;
+    int iX = 0, tail = array.size() - 1;
+    vector<int> latter;
+    for (int i = 0; i < array.size(); i++)
+      if (array[i] % 2 == 1)
+        array[iX++] = array[i];
+      else
+        latter.push_back(array[i]);
+    for (int i = latter.size() - 1; i >= 0; i--)
+      array[tail--] = latter[i];
   }
   // 14.链表倒数第K个结点 4ms
   ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
@@ -244,6 +261,208 @@ public:
     }
     pHead->next = after;
     return pHead;
+  }
+  // 16.合并两个排序的链表
+  ListNode* Merge(ListNode* pHead1, ListNode* pHead2){
+    ListNode *dummy = new ListNode(0), *p = dummy;
+    while (pHead1 != NULL && pHead2 != NULL) {
+      if (pHead1->val <= pHead2->val) {
+        p->next = pHead1;
+        pHead1 = pHead1->next;
+      } else {
+        p->next = pHead2;
+        pHead2 = pHead2->next;
+      }
+      p = p->next;
+    }
+    if (pHead1 != NULL) p->next = pHead1;
+    else if (pHead2 != NULL) p->next = pHead2;
+    return dummy->next; 
+  }
+
+
+  // 22.从上往下打印二叉树
+  vector<int> PrintFromTopToBottom(TreeNode* root) {
+    vector<int> res;
+    if (root == NULL) return res; 
+    queue<TreeNode* > myQueue;
+    TreeNode* nowNode;
+    myQueue.push(root);
+    while (!myQueue.empty()) {
+      nowNode = myQueue.front();
+      myQueue.pop();
+      res.push_back(nowNode->val);
+      if (nowNode->left != NULL) myQueue.push(nowNode->left);
+      if (nowNode->right != NULL) myQueue.push(nowNode->right);
+    }
+    return res;
+  }
+
+  // 24.二叉搜索树的后序遍历序列
+  bool VerifySquenceOfBST(vector<int> sequence) {
+    if (sequence.size() == 0)
+      return false;
+    vector<int> left;
+    vector<int> right;
+    int mid = sequence[sequence.size() - 1];
+    int i = 0;
+    while (sequence[i] < mid)
+      left.push_back(sequence[i++]);
+    while (sequence[i] > mid)
+      right.push_back(sequence[i++]);
+    if (i == sequence.size() - 1) {
+      bool res = true;
+      if (left.size() > 0)
+        res = res && VerifySquenceOfBST(left);
+      if (right.size() > 0)
+        res = res && VerifySquenceOfBST(right);
+      return res;
+    } else {
+      return false;
+    }
+  }
+  // 25.二叉树中和为某一值的路径
+  vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+    vector<vector<int> > res;
+    if (root == NULL) return res;
+    vector<int> path;
+    dfs(root, expectNumber, path, res);
+    return res;
+  }
+  void dfs(TreeNode* root, int expectNumber, vector<int> &path, vector<vector<int> > &res) {
+    path.push_back(root->val);
+    expectNumber -= root->val;
+    if (root->left == NULL && root->right == NULL) {
+      if (expectNumber == 0) {
+        vector<int> newPath = path;
+        res.push_back(newPath);
+      }
+    } else {
+      if (root->left != NULL)
+        dfs(root->left, expectNumber, path, res);
+      if (root->right != NULL)
+        dfs(root->right, expectNumber, path, res);
+    }
+    path.pop_back();
+  }
+  // 26.复杂链表的复制
+  RandomListNode* Clone(RandomListNode* pHead) {
+    // <old, new>
+    map<RandomListNode*, RandomListNode*> myMap;
+    RandomListNode *dummy = new RandomListNode(0), *p = dummy, *q = pHead;
+    while (q != NULL) {
+      RandomListNode *newNode = new RandomListNode(q->label);
+      p->next = newNode;
+      myMap[q] = newNode;
+      p = p->next;
+      q = q->next;
+    }
+    p = dummy->next;
+    q = pHead;
+    while (p != NULL) {
+      if (q->random != NULL)
+        p->random = myMap[q->random];
+      p = p->next;
+      q = q->next;
+    }
+    return dummy->next;
+  }
+  // 27.二叉搜索树与双向链表
+  TreeNode* Convert(TreeNode* pRootOfTree) {
+    if (pRootOfTree == NULL) return pRootOfTree;
+    vector<TreeNode*> preList;
+    preOrderTraverse27(pRootOfTree, preList);
+    for (int i = 0; i < preList.size() - 1; i++) {
+      preList[i]->right = preList[i + 1];
+      preList[i + 1]->left = preList[i];
+    }
+    preList[0]->left = NULL;
+    preList[preList.size() - 1]->right = NULL;
+    return preList[0];
+  }
+  void preOrderTraverse27(TreeNode* root, vector<TreeNode*> &preList) {
+    if (root != NULL) {
+      preOrderTraverse27(root->left, preList);
+      preList.push_back(root);
+      preOrderTraverse27(root->right, preList);
+    }
+  }
+  // 28.字符串的排列
+  vector<string> Permutation(string str) {
+    vector<string> resList;
+    if (str.size() == 0) return resList;
+    string res = "";
+    sort(str.begin(), str.end());
+    bool used[str.size()];
+    for (int i = 0; i < str.size(); i++) used[i] = false;
+    backTrack28(resList, res, str, used);
+    return resList;
+  }
+  void backTrack28(vector<string> &resList, string &res, string &str, bool used[]) {
+    if (res.size() == str.size()) {
+      string newRes = res;
+      resList.push_back(newRes);
+    } else {
+      for (int i = 0; i < str.size(); i++) {
+        if ( used[i]  || (i > 0 && str[i] == str[i - 1] && !used[i - 1]) )
+          continue;
+        res = res + str[i];
+        used[i] = true;
+        backTrack28(resList, res, str, used);
+        res.erase(res.size()-1, 1);
+        used[i] = false;
+      }
+    }
+  }
+
+  // 29.数组中出现次数超过一半的数字
+  int MoreThanHalfNum_Solution(vector<int> numbers) {
+    if (numbers.size() == 1) return numbers[0];
+    // number, count
+    map<int, int> myMap;
+    for (int number: numbers) {
+      if (myMap.find(number) == myMap.end()) {
+        myMap[number] = 1;
+      } else {
+        myMap[number]++;
+        if (myMap[number] > (numbers.size() / 2))
+          return number;
+      }
+    }
+    return 0;
+  }
+
+  void partition(vector<int> &nums, int start, int end, int key) {
+    int i = start, j = end, temp = nums[start];
+    while (i < j) {
+      while (i < j && nums[j] >= temp)
+        j--;
+      if (i < j)
+        nums[i++] = nums[j];
+      while (i < j && nums[i] <= temp)
+        i++;
+      if (i < j)
+        nums[j--] = nums[i];
+    }
+    nums[i] = temp;
+    if (i > key)
+      partition(nums, start, i - 1, key);
+    else if (i < key)
+      partition(nums, i + 1, end, key);
+  }
+  // 30. 最小的 K 个数
+  vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+    vector<int> res;
+    if (k > input.size() || k == 0) return res;
+    partition(input, 0, input.size() - 1, k - 1);
+    for (int i = 0; i < k; i++)
+      res.push_back(input[i]);
+    return res;
+  }
+
+  // 31. 连续子数组的最大和
+  int FindGreatestSumOfSubArray(vector<int> array) {
+    
   }
 
   // 66.机器人的运动范围 5ms
@@ -304,6 +523,10 @@ public:
 
 int main() {
   Solution s;
-  cout << s.movingCount(3, 100, 100) << endl;
+  vector<int> nums = {4,5,1,6,2,7,3,8};
+  vector<int> res = s.GetLeastNumbers_Solution(nums, 1);
+  for (int num: res) {
+    cout << num << endl;
+  }
 
 }
