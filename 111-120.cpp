@@ -118,5 +118,47 @@ public:
     }
   }
 
+  // 118. Pascal's Triangle
+    vector<vector<int>> generate(int numRows) {
+        if (numRows == 0) {
+            return {};
+        } else {
+            vector<vector<int> > res = {{1}};
+            for (int i = 1; i < numRows; i++) {
+                vector<int> newRow = {1};
+                for (int j = 1; j < i; j++) {
+                    newRow.push_back(res[i - 1][j - 1] + res[i - 1][j]);
+                }
+                newRow.push_back(1);
+                res.push_back(newRow);
+            }
+            // res.insert(res.begin(), {});
+            return res;
+        }
+    }
+    // 119. Pascal's Triangle 2
+    vector<int> getRow(int rowIndex) {
+        vector<int> res = {};
+        for (int i = 0; i <= rowIndex; i++) {
+            res.insert(res.begin(), 1);
+            for (int j = 1; j < i; j++) {
+                res[j] = res[j] + res[j + 1];
+            }
+        }
+        return res;
+    }
 
+    void printArr(vector<int> &arr) {
+        for (int i = 0; i < arr.size(); i++) {
+            cout << arr[i] << ", ";
+        }
+        cout << endl;
+    }
+};
+int main () {
+    int n = 4;
+    Solution s;
+    vector<int> arr = s.getRow(n);
+    s.printArr(arr);
+    return 0;
 }
