@@ -31,6 +31,47 @@ struct TreeNode {
 
 class Solution {
 public:
+    // 187. Repeated DNA Sequences
+    vector<string> findRepeatedDnaSequences(string s) {
+        vector<string> res;
+        if (s.size() <= 10)
+            return res;
+
+        unordered_map<string, int> cntMap;
+        for (int i = 0; i + 9 < s.size(); i++) {
+            string now = s.substr(i, 10);
+            if (cntMap.find(now) == cntMap.end()) {
+                cntMap[now] = 1;
+            } else {
+                if (cntMap[now] == 1) {
+                    cntMap[now] = 2;
+                    res.push_back(now);
+                }
+            }
+        }
+        return res;
+    }
+
+    // 189. Rotate Array
+    void rotate(vector<int>& nums, int k) {
+        int len = nums.size();
+        k = k % len;
+        int count = 0;
+        for (int i = 0; count < len; i++) {
+            int next = (i + k) % len;
+            int prevInt = nums[i];
+            while (true) {
+                int temp = nums[next];
+                nums[next] = prevInt;
+                next = (next + k) % len;
+                count++;
+                prevInt = temp;
+                if (next == (i + k) % len)
+                    break;
+            }
+        }    
+    }
+
     // 190. Reverse Bits
     uint32_t reverseBits(uint32_t n) {
         uint32_t res = 0;
@@ -149,13 +190,46 @@ public:
         }
         return primes.size() + 1;
     }
+
+    // 205. Isomorphic Strings
+    bool isIsomorphic(string s, string t) {
+        if (s.size() != t.size())
+            return false;
+        unordered_map<char, char> charMap;
+        unordered_map<char, char> charMap2;
+        for (int i = 0; i < s.size(); i++) {
+            if (charMap.find(t[i]) == charMap.end() && charMap2.find(s[i]) == charMap2.end()) {
+                charMap[t[i]] = s[i];
+                charMap2[s[i]] = t[i];
+            } else {
+                if (charMap[t[i]] != s[i] || charMap2[s[i]] != t[i])
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    void printArr(vector<int>& nums) {
+        for (int num: nums)
+            cout << num << ", ";
+        cout << endl;
+    }
 };
 
 int main() {
     int m = 2147483646;
     int n = 2147483647;
-    Solution s;
-    while (cin >> n) {
-        cout << boolalpha << s.countPrimes(n) << endl;
-    }
+    Solution solution;
+    vector<int> arr = {1, 2, 3, 4, 5, 6};
+    solution.printArr(arr);
+    solution.rotate(arr, 3);
+    solution.printArr(arr);
+    // string s, t;
+    // while (cin >> s) {
+    //     vector<string> res = solution.findRepeatedDnaSequences(s);
+    //     for (string str: res) {
+    //         cout << str << ", ";
+    //     }
+    //     cout << endl;
+    // }
 }

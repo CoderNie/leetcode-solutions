@@ -138,6 +138,37 @@ public:
         }
     }
 
+    unordered_map<string, int> cacheMap;
+    // 115. Distinct Subsequences
+    int numDistinct(string s, string t) {
+        if (cacheMap.find(s + "&" + t) != cacheMap.end())
+            return cacheMap[s + "&" + t];
+        if (s.size() < t.size())
+            return 0;
+        if (s.size() == t.size()) {
+            if (s == t) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        int sum = 0;
+        if (t.size() == 1) {
+            for (int i = 0; i < s.size(); i++)
+                if (s[i] == t[0])
+                    sum++;
+        } else {
+            for (int i = 0; i <= s.size() - t.size(); i++) {
+                if (s[i] == t[0]) {
+                    // cout << s.substr(i + 1) << ",,," << t.substr(1) << endl;
+                    sum += numDistinct(s.substr(i + 1), t.substr(1));
+                }
+            }
+        }1
+        cacheMap[s + "&" + t] = sum;
+        return sum;
+    }        
+
     // 118. Pascal's Triangle
         vector<vector<int>> generate(int numRows) {
             if (numRows == 0) {
@@ -177,8 +208,10 @@ public:
     };
     int main () {
         int n = 4;
-        Solution s;
-        vector<int> arr = s.getRow(n);
-        s.printArr(arr);
+        Solution solution;
+        string s, t;
+        while (cin >> s >> t) {
+            cout << solution.numDistinct(s, t) << endl;
+        }
         return 0;
     }

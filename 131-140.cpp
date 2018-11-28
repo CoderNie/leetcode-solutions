@@ -172,6 +172,24 @@ public:
         return -1;
     }
 
+    // 135. Candy
+    int candy(vector<int>& ratings) {
+        int len = ratings.size();
+        vector<int> leftToRight(len, 1), rightToLeft(len, 1);
+        for (int i = 0; i < len - 1; i++) {
+            if (ratings[i + 1] > ratings[i])
+                leftToRight[i + 1] = leftToRight[i] + 1;
+        }
+        for (int i = len - 1; i > 0; i--) {
+            if (ratings[i - 1] > ratings[i])
+                rightToLeft[i - 1] = rightToLeft[i] + 1;
+        }
+        int sum = 0;
+        for (int i = 0; i < len; i++)
+            sum += max(leftToRight[i], rightToLeft[i]);
+        return sum;
+    }
+
     // 136. Single Number 
     int singleNumber1(vector<int>& nums) {
         int res = 0;

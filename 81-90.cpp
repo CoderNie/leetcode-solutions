@@ -165,6 +165,30 @@
         return head;
     }
 
+    unordered_map<string, bool> myMap;
+
+    // 87. Scramble String
+    bool isScramble(string s1, string s2) {
+        if (myMap.find(s1 + s2) != myMap.end())
+            return myMap[s1 + s2];
+        if (s1.size() != s2.size())
+            return false;
+        if (s1 == s2)
+            return true;
+        // cout << s1 << ",,," << s2 << endl;
+        int len = s1.size();
+        bool res = false;
+        for (int i = 1; i < len; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(len - i, i)) && isScramble(s1.substr(i, len - i), s2.substr(0, len - i)) 
+                || isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i, len - i), s2.substr(i, len - i))){
+                res = true;
+                break;
+            }
+        }
+        myMap[s1 + s2] = res;
+        return res;
+    }
+
     // 88. Merge Sorted Array
     void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
         int p = m - 1, q = n - 1;
@@ -281,12 +305,11 @@
     };
 
 int main () {
-    Solution s;
-    vector<int> arr;
-    arr = s.grayCode(10);
-    for (int i = 0; i < arr.size(); i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
+    Solution solution;
+    string a, b;
+    cin >> a >> b;
+     cout << boolalpha << solution.isScramble(a, b) << endl;
+    //cout << a.substr(3, 2) << endl;
     return 0;
 }
+

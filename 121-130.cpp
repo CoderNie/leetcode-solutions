@@ -63,6 +63,23 @@ public:
         return dp[maxK][length - 1];
     }
 
+    // 124. Binary Tree Maximum Path Sum
+    int maxPathSumVal;
+    int maxPathSum(TreeNode* root) {
+        maxPathSumVal = INT32_MIN;
+        maxPathDown(root);
+        return maxPathSumVal;
+    }
+    int maxPathDown(TreeNode* root) {
+        if (root == NULL)
+            return 0;
+        int left = max(maxPathDown(root->left), 0);
+        int right = max(maxPathDown(root->right), 0);
+        maxPathSumVal = max(maxPathSumVal, left + right + root->val);
+        return max(left, right) + root->val;
+    }
+
+
     // 125. Valid Palindrome
     bool isAlphaNumeric(char ch) {
         if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9'))
@@ -96,6 +113,11 @@ public:
             }
         }
         return true;
+    }
+
+    // 126. Word Ladder II
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        
     }
 
     // 127. Word Ladder
@@ -133,6 +155,26 @@ public:
             }
         }
         return 0;
+    }
+
+    // 128. Longest Consecutive Sequence
+    int longestConsecutive(vector<int>& nums) {
+        set<int> nums_set;
+        for (int num : nums)
+            nums_set.insert(num);
+        int res = 0;
+        for (int num : nums) {
+            if (nums_set.find(num - 1) == nums_set.end()) {
+                int count = 1;
+                int now = num;
+                while (nums_set.find(now + 1) != nums_set.end()) {
+                    now++;
+                    count++;
+                }
+                res = max(res, count);
+            }
+        }
+        return res;    
     }
 
     // 129. Sum Root to Leaf Numbers
