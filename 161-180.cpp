@@ -42,6 +42,7 @@ public:
                 begin = mid + 1;
             }
         }
+        
         return begin;
     }
 

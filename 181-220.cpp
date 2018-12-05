@@ -209,6 +209,98 @@ public:
         return true;
     }
 
+    // 207. Course Schedule
+    bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
+        if (numCourses <= 0)
+            return true;
+        // pair<inNodesCnt, outNodes>
+        vector<pair<int, vector<int> > > graph;
+        for (int i = 0; i < numCourses; i++) {
+            graph.push_back({0, {}});
+        }
+        for (int i = 0; i < prerequisites.size(); i++) {
+            int start = prerequisites[i].first;
+            int end = prerequisites[i].second;
+            graph[start].second.push_back(end);
+            graph[end].first++;
+        }
+        int oldCnt = -1, newCnt = 0;
+        while (newCnt != oldCnt) {
+            oldCnt = newCnt;
+            for (int i = 0; i < graph.size(); i++) {
+                if (graph[i].first == 0) {
+                    graph[i].first = -1;
+                    newCnt++;
+                    for (int j = 0; j < graph[i].second.size(); j++)
+                        graph[graph[i].second[j]].first--;
+                }
+            }
+        }
+
+        return (newCnt == numCourses);
+    }
+
+    // 209. Minimum Size Subarray Sum
+    int minSubArrayLen(int s, vector<int>& nums) {
+        // expand and shrink
+        if (nums.size() == 0)
+            return 0;
+        int begin = 0, end = 0, sum = nums[begin], res = 0;
+        while (end < nums.size() - 1) {
+            // expand
+            while (sum < s && end < nums.size()) {
+                end++;
+                sum += nums[end];
+            }
+            if (sum < s)
+                return res;
+            // shrink
+            while (sum >= s && begin <= end) {
+                sum -= nums[begin];
+                begin++;
+            }
+            if (res == 0 || end - begin + 2 < res)
+                res = end - begin + 2;
+        }
+        return res;
+    }
+
+    // 210. Course Schedule II
+    vector<int> findOrder(int numCourses, vector<pair<int, int>>& prerequisites) {
+        vector<int> res;
+        if (numCourses <= 0)
+            return res;
+        // pair<inNodesCnt, outNodes>
+        vector<pair<int, vector<int> > > graph;
+        for (int i = 0; i < numCourses; i++) {
+            graph.push_back({0, {}});
+        }
+        for (int i = 0; i < prerequisites.size(); i++) {
+            int start = prerequisites[i].first;
+            int end = prerequisites[i].second;
+            graph[start].second.push_back(end);
+            graph[end].first++;
+        }
+        queue<int> bfsQueue;
+        for (int i = 0; i < graph.size(); i++) {
+            if (graph[i].first == 0)
+                bfsQueue.push(i);
+        }
+        while (!bfsQueue.empty()) {
+            int now = bfsQueue.front();
+            res.push_back(now);
+            bfsQueue.pop();
+            for (int i = 0; i < graph[now].second.size(); i++) {
+                int outNode = graph[now].second[i];
+                graph[outNode].first--;
+                if (graph[outNode].first == 0)
+                    bfsQueue.push(outNode);
+            }
+        }
+        reverse(res.begin(), res.end());
+        return (res.size() == numCourses) ? res : vector<int>();
+    }
+
     void printArr(vector<int>& nums) {
         for (int num: nums)
             cout << num << ", ";
@@ -216,20 +308,76 @@ public:
     }
 };
 
+struct TrieNode {
+    unordered_map<char, TrieNode*> children;
+    bool isWord;
+    TrieNode(): isWord(false) {}
+};
+
+// 208. Implement Trie (Prefix Tree)
+class Trie {
+private:
+    TrieNode *root;
+public:
+    /** Initialize your data structure here. */
+    Trie() {
+        root = new TrieNode();
+    }
+    ~Trie() {
+        delete root;
+    }
+    /** Inserts a word into the trie. */
+    void insert(string word) {
+        TrieNode *cur = root;
+        for (int i = 0; i < word.size(); i++) {
+            char ch = word[i];
+            if (cur->children.find(ch) == cur->children.end()) {
+                cur->children[ch] = new TrieNode();
+            }
+            cur = cur->children[ch];
+        }
+        cur->isWord = true;
+    }
+    
+    /** Returns if the word is in the trie. */
+    bool search(string word) {
+        TrieNode *cur = root;
+        for (int i = 0; i < word.size(); i++) {
+            char ch = word[i];
+            if (cur->children.find(ch) == cur->children.end()) {
+                return false;
+            } else {
+                cur = cur->children[ch];
+            }
+        }
+        return cur->isWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    bool startsWith(string prefix) {
+        TrieNode *cur = root;
+        for (int i = 0; i < prefix.size(); i++) {
+            char ch = prefix[i];
+            if (cur->children.find(ch) == cur->children.end()) {
+                return false;
+            } else {
+                cur = cur->children[ch];
+            }
+        }
+        return true;
+    }
+};
+
 int main() {
     int m = 2147483646;
     int n = 2147483647;
     Solution solution;
-    vector<int> arr = {1, 2, 3, 4, 5, 6};
-    solution.printArr(arr);
-    solution.rotate(arr, 3);
-    solution.printArr(arr);
-    // string s, t;
-    // while (cin >> s) {
-    //     vector<string> res = solution.findRepeatedDnaSequences(s);
-    //     for (string str: res) {
-    //         cout << str << ", ";
-    //     }
-    //     cout << endl;
-    // }
+    Trie trie;
+
+    trie.insert("apple");
+    cout << boolalpha << trie.search("apple");   // returns true
+    cout << boolalpha << trie.search("app");     // returns false
+    // cout << boolalpha << trie.startsWith("app"); // returns true
+    trie.insert("app");   // returns true
+    cout << boolalpha << trie.search("app");     // returns false
 }
